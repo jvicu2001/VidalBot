@@ -30,12 +30,12 @@ class Akinator_Game(commands.Cog):
             {} = No sé\n \
             {} = Probablemente\n \
             {} = Probablemente no".format(
-                                                                    question_emojis[0],
-                                                                    question_emojis[1],
-                                                                    question_emojis[2],
-                                                                    question_emojis[3],
-                                                                    question_emojis[4]
-                                                                    )
+                                        question_emojis[0],
+                                        question_emojis[1],
+                                        question_emojis[2],
+                                        question_emojis[3],
+                                        question_emojis[4]
+                                        )
         else:
             description = "{} = Sí\n \
             {} = No\n \
@@ -43,13 +43,13 @@ class Akinator_Game(commands.Cog):
             {} = Probablemente\n \
             {} = Probablemente no\n \
             {} = Retroceder una pregunta".format(
-                                                                    question_emojis[0],
-                                                                    question_emojis[1],
-                                                                    question_emojis[2],
-                                                                    question_emojis[3],
-                                                                    question_emojis[4],
-                                                                    question_emojis[5]
-                                                                    )
+                                        question_emojis[0],
+                                        question_emojis[1],
+                                        question_emojis[2],
+                                        question_emojis[3],
+                                        question_emojis[4],
+                                        question_emojis[5]
+                                        )
         
         embed = discord.Embed(
             title=question_text,
@@ -83,7 +83,16 @@ class Akinator_Game(commands.Cog):
             title='¡Se te acabó el tiempo!',
             type='rich',
             color=0xFF2000,
-            description='Pasaron 2 minutos sin que dieras una respuesta\nPuedes iniciar una partida nueva si quieres volver a jugar'
+            description='Pasaron 2 minutos sin que dieras una respuesta\n\
+                Puedes iniciar una partida nueva si quieres volver a jugar'
+            )
+            
+    async def question_limit_embed(self):
+        return discord.Embed(
+            title='¡Se acabaron las preguntas!',
+            type='rich',
+            color=0xFF2000,
+            description='¡Me has vencido!'
             )
 
     async def win_embed(self, guess, player):
@@ -91,7 +100,8 @@ class Akinator_Game(commands.Cog):
             title=guess['name'],
             type='rich',
             color=0xffd700,
-            description='**¡Genial! He adivinado bien una vez más.**\nJuguemos otra vez.'
+            description='**¡Genial! He adivinado bien una vez más.**\n\
+                Juguemos otra vez.'
             )
         embed.set_image(url=guess['absolute_picture_path'])
 
@@ -105,16 +115,28 @@ class Akinator_Game(commands.Cog):
         if step == 0:
             for emoji in question_emojis[:-1]:
                 await msg.add_reaction(emoji)
+                await asyncio.sleep(0.5)
         else:
             for emoji in question_emojis:
                 await msg.add_reaction(emoji)
+                await asyncio.sleep(0.5)
 
     async def guess_fill_react(self, msg):
         for emoji in guess_emojis:
             await msg.add_reaction(emoji)
+            await asyncio.sleep(0.5)
     
     
-    @commands.command(name='aki')
+    @commands.command(
+        name='akinator',
+        aliases=['aki'],
+        help='Juega una partida de Akinator.\n \
+            Se usan las reacciones puestas por el bot en la \
+                pregunta para seleccionar tu respuesta.\n\
+            Nota: Hay que esperar a que el bot termine de colocar las \
+                reacciones para que funcione correctamente.',
+        brief='Juega a Akinator!'
+        )
     async def aki(self, ctx):
         player = ctx.author
         game = Akinator()
@@ -132,7 +154,7 @@ class Akinator_Game(commands.Cog):
             return (user == player and str(reaction.emoji) in guess_emojis)
 
         
-        while win is False:
+        while (win is False and game.step < 80):
             
             # Wait for reaction answer from original user
             try:
@@ -157,7 +179,7 @@ class Akinator_Game(commands.Cog):
                     question = await game.back()
             
             # Ask if the current guess is correct
-            if game.progression >= 80:
+            if game.progression >= 80 or game.step == 80:
                 guess = await game.win()
                 await game_message.clear_reactions()
                 game_embed = await self.guess_embed(ctx, guess, player)
@@ -195,6 +217,11 @@ class Akinator_Game(commands.Cog):
         if win:
             await game_message.clear_reactions()
             game_embed = await self.win_embed(game.first_guess, player)
+            return await game_message.edit(embed=game_embed)
+            
+        else:
+            await game_message.clear_reactions()
+            game_embed = await self.question_limit_embed(game.first_guess)
             return await game_message.edit(embed=game_embed)
 
         

@@ -9,7 +9,12 @@ class KanyeQuotes(commands.Cog):
 
     api_url = 'https://api.kanye.rest'
 
-    @commands.command(name='kanye', aliases=["kanye_quote", "kanye_rest"])
+    @commands.command(
+        name='kanye',
+        aliases=["kanye_quote", "kanye_rest"],
+        help='Entrega frases dichas por Kanye West (en inglés)\nSe obtienen desde kanye.rest',
+        brief='Frases de Kanye West'
+        )
     async def kanye(self, ctx):
         async with aiohttp.ClientSession() as session:
                 async with session.get(self.api_url) as resp:
