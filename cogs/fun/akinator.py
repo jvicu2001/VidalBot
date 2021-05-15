@@ -1,8 +1,11 @@
+from operator import ge
 import discord
+from discord.colour import Colour
 from discord.ext import commands
 import asyncio
 import aiohttp
 from akinator.async_aki import Akinator
+from enum import Enum
 
 aki_lang = 'es'
 
@@ -17,12 +20,19 @@ question_emojis = (
 
 guess_emojis = ('✅','❌')
 
+class AkinatorStatus(Enum):
+    QUESTION = 0
+    GUESS = 1
+    TIMEOUT = 2
+    WIN = 3
+    LOSS = 4
+
 
 class Akinator_Game(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def question_embed(self, ctx, question_text, player, step):
+    async def question_embed(self, ctx, question_text, player, step, color):
         description = ''
         if step == 0:
             description = "{} = Sí\n \
@@ -54,7 +64,7 @@ class Akinator_Game(commands.Cog):
         embed = discord.Embed(
             title=question_text,
             type='rich',
-            color=0xC5F5F0,
+            color=color,
             description=description
             )
         embed.set_footer(
@@ -111,20 +121,32 @@ class Akinator_Game(commands.Cog):
         )
         return embed
     
-    async def question_fill_react(self, msg, step):
-        if step == 0:
-            for emoji in question_emojis[:-1]:
+    async def question_fill_react(self, msg: discord.Message, player, reaction, step):
+        # Remove player answer
+        if reaction:
+            await reaction.remove(player)
+        cached_msg = discord.utils.get(self.bot.cached_messages, id=msg.id)
+        if len(cached_msg.reactions) < 6:
+            msg_emojis = map(lambda x : x.emoji, cached_msg.reactions)
+            missing_reacts = list(filter(lambda x : x not in msg_emojis, question_emojis))
+            if step == 0:
+                if question_emojis[-1] in missing_reacts:
+                    missing_reacts.remove(question_emojis[-1])
+                if question_emojis[-1] in msg_emojis:
+                    await msg.clear_reaction(question_emojis[-1])
+
+            for emoji in missing_reacts:
                 await msg.add_reaction(emoji)
-                await asyncio.sleep(0.5)
-        else:
-            for emoji in question_emojis:
-                await msg.add_reaction(emoji)
-                await asyncio.sleep(0.5)
 
     async def guess_fill_react(self, msg):
+        #cached_msg = discord.utils.get(self.bot.cached_messages, id=msg.id)
         for emoji in guess_emojis:
             await msg.add_reaction(emoji)
             await asyncio.sleep(0.5)
+
+    def progression_color(self, progression):
+        return discord.Colour.from_hsv(progression*0.00333, 0.74, 1.0)
+
     
     
     @commands.command(
@@ -132,9 +154,7 @@ class Akinator_Game(commands.Cog):
         aliases=['aki'],
         help='Juega una partida de Akinator.\n \
             Se usan las reacciones puestas por el bot en la \
-                pregunta para seleccionar tu respuesta.\n\
-            Nota: Hay que esperar a que el bot termine de colocar las \
-                reacciones para que funcione correctamente.',
+                pregunta para seleccionar tu respuesta',
         brief='Juega a Akinator!'
         )
     async def aki(self, ctx):
@@ -142,9 +162,12 @@ class Akinator_Game(commands.Cog):
         game = Akinator()
         question = await game.start_game(language=aki_lang)
         win = False
-        game_embed = await self.question_embed(ctx, question, player, game.step)
+        color = self.progression_color(game.progression)
+        game_embed = await self.question_embed(ctx, question, player, game.step, color)
         game_message = await ctx.send(embed=game_embed)
-        await self.question_fill_react(game_message, game.step)
+        await self.question_fill_react(game_message, player, None, game.step)
+        status = AkinatorStatus.QUESTION
+        rejected_guesses = set()
         
         # Check if the original user reacted with one of the correct emojis
         def question_react_check(reaction, user):
@@ -181,38 +204,46 @@ class Akinator_Game(commands.Cog):
             # Ask if the current guess is correct
             if game.progression >= 80 or game.step == 80:
                 guess = await game.win()
-                await game_message.clear_reactions()
-                game_embed = await self.guess_embed(ctx, guess, player)
-                await game_message.edit(embed=game_embed)
-                await self.guess_fill_react(game_message)
                 
-                try:
-                    reaction, user = await self.bot.wait_for(
-                        "reaction_add",
-                        timeout=120.0,
-                        check=guess_react_check
-                        )
-                
-                except asyncio.TimeoutError:
+                # Skip character guess if it was already rejected
+                if guess['id'] not in rejected_guesses:
                     await game_message.clear_reactions()
-                    game_embed = await self.timeout_embed()
+                    game_embed = await self.guess_embed(ctx, guess, player)
                     await game_message.edit(embed=game_embed)
-                    break
-
-                # Win if the answer is positive
-                else:
-                    answer = guess_emojis.index(str(reaction.emoji))
+                    await self.guess_fill_react(game_message)
                     
-                    # Win and end game loop
-                    if answer == 0:
-                        win = True
-                        continue
+                    try:
+                        reaction, user = await self.bot.wait_for(
+                            "reaction_add",
+                            timeout=120.0,
+                            check=guess_react_check
+                            )
+                    
+                    except asyncio.TimeoutError:
+                        await game_message.clear_reactions()
+                        game_embed = await self.timeout_embed()
+                        await game_message.edit(embed=game_embed)
+                        break
+
+                    # Win if the answer is positive
+                    else:
+                        answer = guess_emojis.index(str(reaction.emoji))
+                        
+                        # Win and end game loop
+                        if answer == 0:
+                            win = True
+                            continue
+                        
+                        # Add guess to rejected set
+                        else:
+                            rejected_guesses.add(guess['id'])
             
             
-            await game_message.clear_reactions()
-            game_embed = await self.question_embed(ctx, question, player, game.step)
+            # await game_message.clear_reactions()
+            color = self.progression_color(game.progression)
+            game_embed = await self.question_embed(ctx, question, player, game.step, color)
             await game_message.edit(embed=game_embed)
-            await self.question_fill_react(game_message, game.step)
+            await self.question_fill_react(game_message, player, reaction, game.step)
 
         if win:
             await game_message.clear_reactions()
@@ -221,7 +252,7 @@ class Akinator_Game(commands.Cog):
             
         else:
             await game_message.clear_reactions()
-            game_embed = await self.question_limit_embed(game.first_guess)
+            game_embed = await self.question_limit_embed()
             return await game_message.edit(embed=game_embed)
 
         
