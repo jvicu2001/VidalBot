@@ -133,6 +133,22 @@ class RandomAnimals(commands.Cog):
             footer_text = 'Patito auspiciado por random-d.uk'
             )
 
+    @commands.command(
+                    name='bird', 
+                    aliases=['ave', 'aves', 'birds', 'pajaro', 'pajaros', 'pajarito', 'pajaritos'],
+                    help="Muestra la imagen de un ave obtenida desde shibe.online",
+                    brief="Imágenes de aves"
+                    )
+    async def bird(self, ctx):
+        await self.random_base(
+            ctx, 
+            api_url = 'http://shibe.online/api/birds',
+            header_text = 'Aquí te va un pajarito',
+            image_field_path = [0],
+            favicon_url = 'https://assets.stickpng.com/images/5845e770fb0b0755fa99d7f4.png',
+            footer_text = 'Pajarito auspiciado por shibe.online'
+            )
+
         
 def setup(bot):
     bot.add_cog(RandomAnimals(bot))
