@@ -3,9 +3,7 @@ import discord
 from discord.colour import Colour
 from discord.ext import commands
 import asyncio
-import aiohttp
 from akinator.async_aki import Akinator
-from enum import Enum
 
 aki_lang = 'es'
 
@@ -18,14 +16,35 @@ question_emojis = (
     '↩️'
 )
 
+available_langs = (
+    "en", # English (default)
+    "en_animals", # English server for guessing animals
+    "en_objects", # English server for guessing objects
+    "ar", # Arabic
+    "cn", # Chinese
+    "de", # German
+    "de_animals", # German server for guessing animals
+    "es", # Spanish
+    "es_animals", # Spanish server for guessing animals
+    "fr", # French
+    "fr_animals", # French server for guessing animals
+    "fr_objects", # French server for guessing objects
+    "il", # Hebrew
+    "it", # Italian
+    "it_animals", # Italian server for guessing animals
+    "jp", # Japanese
+    "jp_animals", # Japanese server for guessing animals
+    "kr", # Korean
+    "nl", # Dutch
+    "pl", # Polish
+    "pt", # Portuguese
+    "ru", # Russian
+    "tr", # Turkish
+    "id", # Indonesian
+)
+
 guess_emojis = ('✅','❌')
 
-class AkinatorStatus(Enum):
-    QUESTION = 0
-    GUESS = 1
-    TIMEOUT = 2
-    WIN = 3
-    LOSS = 4
 
 
 class Akinator_Game(commands.Cog):
@@ -152,21 +171,23 @@ class Akinator_Game(commands.Cog):
     @commands.command(
         name='akinator',
         aliases=['aki'],
-        help='Juega una partida de Akinator.\n \
-            Se usan las reacciones puestas por el bot en la \
-                pregunta para seleccionar tu respuesta',
+        help=f'Juega una partida de Akinator.\n \
+            Se usan las reacciones puestas por el bot en la pregunta para seleccionar tu respuesta\n \
+            Lenguajes disponibles: {str(available_langs)}',
         brief='Juega a Akinator!'
         )
-    async def aki(self, ctx):
+    async def aki(self, ctx, lang: str = None):
         player = ctx.author
         game = Akinator()
-        question = await game.start_game(language=aki_lang)
+        game_lang = aki_lang
+        if lang in available_langs:
+            game_lang = lang
+        question = await game.start_game(language=game_lang)
         win = False
         color = self.progression_color(game.progression)
         game_embed = await self.question_embed(ctx, question, player, game.step, color)
         game_message = await ctx.send(embed=game_embed)
         await self.question_fill_react(game_message, player, None, game.step)
-        status = AkinatorStatus.QUESTION
         rejected_guesses = set()
         
         # Check if the original user reacted with one of the correct emojis
