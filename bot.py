@@ -23,6 +23,7 @@ base_modules = [
             'cogs.fun.animal_pics',
             'cogs.fun.akinator',
             'cogs.fun.kanye',
+            'cogs.fun.tyaas',
             'cogs.db.initialize'
             ]
             
