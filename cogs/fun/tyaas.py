@@ -60,17 +60,28 @@ Horóscopo para el {horoscopo['titulo']}"""
     
     async def obtener_horoscopo(self, ctx, cursor: sqlite3.Cursor):
         tyaas = 'https://api.xor.cl/tyaas/'
+        # Obtener datos desde la API de TYaaS
         async with aiohttp.ClientSession() as session:
                 async with session.get(tyaas) as resp:
                     if resp.status == 200:
                         horoscopo = await resp.json()
                         horoscopo_dump = json.dumps(horoscopo)
-                        dia = datetime.date.today().strftime("%Y-%m-%d")
-                        if dia[5:] == f"{self.meses[horoscopo['titulo'][3:]]}-{int(horoscopo['titulo'][:2]):02}":
-                            cursor.execute("""SELECT * FROM 'TiaYoli';""")
-                            valor_db = cursor.fetchone()
-                            if valor_db:
+                        # Obtener valores ya guardados en la base de datos
+                        cursor.execute("""SELECT * FROM 'TiaYoli';""")
+                        valor_db = cursor.fetchone()
+
+                        # Si es que existen datos y estos corresponden al día actual, devolver
+                        # los datos ya guardados en la base de datos.
+                        # Caso contrario, se actualizan los datos de la base de datos
+                        # y se devuelven estos nuevos datos
+                        if valor_db:
+                            dia_guardado = valor_db[2]
+                            if dia_guardado[5:] == f"{self.meses[horoscopo['titulo'][3:]]}-{int(horoscopo['titulo'][:2]):02}":
                                 return json.loads(valor_db[1])
+                        
+                        dia = datetime.datetime.today().strftime("%Y-%m-%d")
+
+                        # Guardar los nuevos datos en la base de datos
                         cursor.execute('''INSERT INTO "TiaYoli"(id, horoscopo, dia) VALUES (?, ?, ?)
         ON CONFLICT(id) DO UPDATE SET horoscopo=?, dia=?;''', [0, horoscopo_dump, dia, horoscopo_dump, dia])
                         return horoscopo
@@ -88,6 +99,9 @@ Horóscopo para el {horoscopo['titulo']}"""
         cursor = db.cursor()
         cursor.execute("""SELECT * FROM 'TiaYoli';""")
         saved_data = cursor.fetchone()
+        # Si es que existen datos en la base de dato y corresponden al día actual,
+        # utilizar estos datos guardados.
+        # En caso contrario, obtener nuevos datos desde la API
         if saved_data:
             today = datetime.date.today()
             saved_day = datetime.date.fromisoformat(saved_data[2])
@@ -99,8 +113,11 @@ Horóscopo para el {horoscopo['titulo']}"""
             horoscopo = await self.obtener_horoscopo(ctx, cursor)
         
         if horoscopo:
-            embed = await self.armar_horoscopo(signo, horoscopo)
-            await ctx.send(embed=embed)
+            try:
+                embed = await self.armar_horoscopo(signo, horoscopo)
+                await ctx.send(embed=embed)
+            except KeyError:
+                await ctx.send("No se pudo encontrar el signo.\nAsegurate de que está bien escrito y de que no tenga tildes.")
 
         db.commit()
         db.close()
