@@ -163,7 +163,7 @@ class RandomAnimals(commands.Cog):
                     help="Muestra la imagen de una hiena obtenida desde hyena.pictures",
                     brief="Imágenes de hienas"
                     )
-    async def bird(self, ctx):
+    async def hyena(self, ctx):
 
         image_num = randint(0, 4015)
         await self.random_base(
