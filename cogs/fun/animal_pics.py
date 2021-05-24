@@ -20,7 +20,14 @@ class RandomAnimals(commands.Cog):
         async with aiohttp.ClientSession() as session:
                 async with session.get(api_url) as resp:
                     if resp.status == 200:
-                        animal = await resp.json()
+                        if resp.content_type == "application/json":
+                            animal = await resp.json()
+                        if resp.content_type in [
+                            'image/gif',
+                            'image/jpeg',
+                            'image/png'
+                        ]:
+                            animal = resp.url
                         embed = discord.Embed(
                             title = header_text,
                             type = 'rich',
@@ -147,6 +154,22 @@ class RandomAnimals(commands.Cog):
             image_field_path = [0],
             favicon_url = 'https://assets.stickpng.com/images/5845e770fb0b0755fa99d7f4.png',
             footer_text = 'Pajarito auspiciado por shibe.online'
+            )
+    
+    @commands.command(
+                    name='hyena', 
+                    aliases=['hyenas', 'hiena', 'hienas'],
+                    help="Muestra la imagen de una hiena obtenida desde hyena.pictures",
+                    brief="Imágenes de hienas"
+                    )
+    async def bird(self, ctx):
+        await self.random_base(
+            ctx, 
+            api_url = 'https://hyena.pictures/',
+            header_text = 'Aquí te va una hiena',
+            image_field_path = [],
+            favicon_url = 'https://hyena.pictures/favicon.ico',
+            footer_text = 'Pajarito auspiciado por hyena.pictures'
             )
 
         
