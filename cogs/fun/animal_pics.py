@@ -3,6 +3,7 @@ from discord.ext import commands
 import asyncio
 import aiohttp
 import json
+from random import randint
 
 
 class RandomAnimals(commands.Cog):
@@ -163,9 +164,11 @@ class RandomAnimals(commands.Cog):
                     brief="Imágenes de hienas"
                     )
     async def bird(self, ctx):
+
+        image_num = randint(0, 4015)
         await self.random_base(
             ctx, 
-            api_url = 'https://hyena.pictures/',
+            api_url = f'https://hyena.pictures/?p={image_num}',
             header_text = 'Aquí te va una hiena',
             image_field_path = [],
             favicon_url = 'https://hyena.pictures/favicon.ico',
