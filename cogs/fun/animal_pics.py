@@ -169,7 +169,7 @@ class RandomAnimals(commands.Cog):
             header_text = 'Aquí te va una hiena',
             image_field_path = [],
             favicon_url = 'https://hyena.pictures/favicon.ico',
-            footer_text = 'Pajarito auspiciado por hyena.pictures'
+            footer_text = 'Hiena auspiciada por hyena.pictures'
             )
 
         
