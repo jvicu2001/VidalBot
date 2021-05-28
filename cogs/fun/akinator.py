@@ -167,7 +167,7 @@ class Akinator_Game(commands.Cog):
         return discord.Colour.from_hsv(progression*0.00333, 0.74, 1.0)
 
     
-    
+    @commands.max_concurrency(1, commands.BucketType.user)
     @commands.command(
         name='akinator',
         aliases=['aki'],
@@ -212,8 +212,7 @@ class Akinator_Game(commands.Cog):
             except asyncio.TimeoutError:
                 await game_message.clear_reactions()
                 game_embed = await self.timeout_embed()
-                await game_message.edit(embed=game_embed)
-                break
+                return await game_message.edit(embed=game_embed)
             
             # Sends the answer to akinator or rolls back one question
             else:
@@ -278,6 +277,13 @@ class Akinator_Game(commands.Cog):
             await game_message.clear_reactions()
             game_embed = await self.question_limit_embed()
             return await game_message.edit(embed=game_embed)
+
+    @aki.error
+    async def aki_error(self, ctx: commands.Context, error):
+        if isinstance(error, commands.errors.MaxConcurrencyReached):
+            await ctx.send('¡Ya estás jugando!')
+        else:
+            await ctx.send(f'Ha ocurrido un error.\n```\n{error}\n```')
 
         
         
