@@ -176,18 +176,19 @@ class Akinator_Game(commands.Cog):
             Lenguajes disponibles: {str(available_langs)}',
         brief='Juega a Akinator!'
         )
-    async def aki(self, ctx, lang: str = None):
+    async def aki(self, ctx: commands.Context, lang: str = None):
         player = ctx.author
         game = Akinator()
         game_lang = aki_lang
         if lang in available_langs:
             game_lang = lang
-        question = await game.start_game(language=game_lang)
-        win = False
-        color = self.progression_color(game.progression)
-        game_embed = await self.question_embed(ctx, question, player, game.step, color)
-        game_message = await ctx.send(embed=game_embed)
-        await self.question_fill_react(game_message, player, None, game.step)
+        async with ctx.channel.typing():
+            question = await game.start_game(language=game_lang)
+            win = False
+            color = self.progression_color(game.progression)
+            game_embed = await self.question_embed(ctx, question, player, game.step, color)
+            game_message = await ctx.send(embed=game_embed)
+            await self.question_fill_react(game_message, player, None, game.step)
         rejected_guesses = set()
         
         # Check if the original user reacted with one of the correct emojis
@@ -228,10 +229,11 @@ class Akinator_Game(commands.Cog):
                 
                 # Skip character guess if it was already rejected
                 if guess['id'] not in rejected_guesses:
-                    await game_message.clear_reactions()
-                    game_embed = await self.guess_embed(ctx, guess, player)
-                    await game_message.edit(embed=game_embed)
-                    await self.guess_fill_react(game_message)
+                    async with ctx.channel.typing():
+                        await game_message.clear_reactions()
+                        game_embed = await self.guess_embed(ctx, guess, player)
+                        await game_message.edit(embed=game_embed)
+                        await self.guess_fill_react(game_message)
                     
                     try:
                         reaction, user = await self.bot.wait_for(
@@ -240,11 +242,11 @@ class Akinator_Game(commands.Cog):
                             check=guess_react_check
                             )
                     
+                    # If timeout, send Timeout embed and finish game
                     except asyncio.TimeoutError:
                         await game_message.clear_reactions()
                         game_embed = await self.timeout_embed()
-                        await game_message.edit(embed=game_embed)
-                        break
+                        return await game_message.edit(embed=game_embed)
 
                     # Win if the answer is positive
                     else:
@@ -261,10 +263,11 @@ class Akinator_Game(commands.Cog):
             
             
             # await game_message.clear_reactions()
-            color = self.progression_color(game.progression)
-            game_embed = await self.question_embed(ctx, question, player, game.step, color)
-            await game_message.edit(embed=game_embed)
-            await self.question_fill_react(game_message, player, reaction, game.step)
+            async with ctx.channel.typing():
+                color = self.progression_color(game.progression)
+                game_embed = await self.question_embed(ctx, question, player, game.step, color)
+                await game_message.edit(embed=game_embed)
+                await self.question_fill_react(game_message, player, reaction, game.step)
 
         if win:
             await game_message.clear_reactions()

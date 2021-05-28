@@ -39,47 +39,48 @@ class Sweeper(commands.Cog):
             Máximo tamaño: 10x10',
         brief='¡Juega a BuscaMinas!'
     )
-    async def fill_board(self, ctx, size: int = 8, bombs: int = -1):
-        # Limit board size. The theorical max should be 18x18 but for some reason
-        # the message stops at around ~115 cells. Maybe there0s a limit on how many
-        # spoilers a message can have. The limit seems to be 99 spoilers per message.
-        size = min(size, 10)
+    async def fill_board(self, ctx: commands.Context, size: int = 8, bombs: int = -1):
+        async with ctx.channel.typing():
+            # Limit board size. The theorical max should be 18x18 but for some reason
+            # the message stops at around ~115 cells. Maybe there0s a limit on how many
+            # spoilers a message can have. The limit seems to be 99 spoilers per message.
+            size = min(size, 10)
 
-        # Fill board with blanks
-        board = [[self.states['BLANK'] for _i in range(size)]for _j in range(size)]
+            # Fill board with blanks
+            board = [[self.states['BLANK'] for _i in range(size)]for _j in range(size)]
 
-        
-        # Set bombs in board
-        if bombs == -1:
-            bomb_count = int(size*size*0.2)
-        else:
-            bomb_count = min(bombs, int(size*size*0.7))
-        while bomb_count > 0:
-            row = randint(0, size-1)
-            column = randint(0, size-1)
+            
+            # Set bombs in board
+            if bombs == -1:
+                bomb_count = int(size*size*0.2)
+            else:
+                bomb_count = min(bombs, int(size*size*0.7))
+            while bomb_count > 0:
+                row = randint(0, size-1)
+                column = randint(0, size-1)
 
-            if board[row][column] == self.states['BLANK']:
-                board[row][column] = self.states['BOMB']
-                bomb_count -= 1
+                if board[row][column] == self.states['BLANK']:
+                    board[row][column] = self.states['BOMB']
+                    bomb_count -= 1
 
-        
+            
 
-        # Set neighbouring bombs number
-        for row in range(size):
-            for column in range(size):
-                cell = board[row][column]
-                if cell != self.states['BOMB']:
-                    neighbourgs = await self.count_neighborgs(board, size, row, column)
-                    if neighbourgs > 0:
-                        board[row][column] = self.states[neighbourgs]
+            # Set neighbouring bombs number
+            for row in range(size):
+                for column in range(size):
+                    cell = board[row][column]
+                    if cell != self.states['BOMB']:
+                        neighbourgs = await self.count_neighborgs(board, size, row, column)
+                        if neighbourgs > 0:
+                            board[row][column] = self.states[neighbourgs]
 
-        # Transform board to message
-        for row in range(size):
-            board[row] = "".join(board[row])
+            # Transform board to message
+            for row in range(size):
+                board[row] = "".join(board[row])
 
-        message = "\n".join(board)
+            message = "\n".join(board)
 
-        return await ctx.send(message)
+            return await ctx.send(message)
     
 
 
