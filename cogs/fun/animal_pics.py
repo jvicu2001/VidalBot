@@ -3,7 +3,7 @@ from discord.ext import commands
 import asyncio
 import aiohttp
 import json
-from random import randint
+from random import randint, choice
 
 
 class RandomAnimals(commands.Cog):
@@ -64,11 +64,12 @@ class RandomAnimals(commands.Cog):
     @commands.command(
                     name='fox',
                     aliases=['zorro', 'zorrito'],
-                    help="Muestra la imagen de un zorro obtenida desde randomfox.ca",
+                    help="Muestra la imagen de un zorro obtenida desde randomfox.ca o fox.swirly.world",
                     brief="Imágenes de zorros"
                     )
     async def fox(self, ctx):
-        await self.random_base(
+        if randint(0, 1):
+            await self.random_base(
             ctx, 
             api_url = 'https://randomfox.ca/floof/',
             header_text = 'Aquí te va un zorrito',
@@ -76,6 +77,16 @@ class RandomAnimals(commands.Cog):
             favicon_url = 'https://randomfox.ca/logo.png',
             footer_text = 'Zorrito auspiciado por randomfox.ca'
             )
+        else:
+            await self.random_base(
+            ctx, 
+            api_url = f'https://fox.swirly.world/?p={randint(0, 2147483647)}',
+            header_text = 'Aquí te va un zorrito',
+            image_field_path = [],
+            favicon_url = 'https://fox.swirly.world/favicon.ico',
+            footer_text = 'Zorrito auspiciado por fox.swirly.world'
+            )
+
             
     @commands.command(
                     name='dog',
@@ -165,7 +176,7 @@ class RandomAnimals(commands.Cog):
                     )
     async def hyena(self, ctx):
 
-        image_num = randint(0, 4015)
+        image_num = randint(0, 2147483647)
         await self.random_base(
             ctx, 
             api_url = f'https://hyena.pictures/?p={image_num}',
