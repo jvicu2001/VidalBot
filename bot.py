@@ -24,6 +24,7 @@ base_modules = [
             'cogs.fun.kanye',
             'cogs.fun.games',
             'cogs.fun.tyaas',
+            'cogs.fun.image_manipulation',
             'cogs.admin.misc',
             'cogs.admin.base_error_catch',
             'cogs.db.initialize'
