@@ -3,6 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 from discord.flags import Intents
+import json
 
 import config
 
@@ -17,7 +18,6 @@ console_handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name
 logger.addHandler(console_handler)
 
 prefix = config.prefix
-
 base_modules = [
             'cogs.fun.hello',
             'cogs.fun.animal_pics',
@@ -25,6 +25,7 @@ base_modules = [
             'cogs.fun.kanye',
             'cogs.fun.games',
             'cogs.fun.tyaas',
+            'cogs.admin.base_error_catch',
             'cogs.db.initialize'
             ]
             
