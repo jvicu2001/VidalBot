@@ -1,4 +1,5 @@
-from random import randint
+from random import randint, normalvariate
+import re
 
 import discord
 from discord.colour import Colour
@@ -87,6 +88,10 @@ class Sweeper(commands.Cog):
             return await ctx.send(message)
 
 class RandomGames(commands.Cog):
+    def __init__(self, bot) -> None:
+        self.bot = bot
+
+        self.diceregex = re.compile(r'(\d+)d(\d+)([+-]\d+)?')
 
     @commands.max_concurrency(1, commands.BucketType.user)
     @commands.command(
@@ -116,19 +121,27 @@ class RandomGames(commands.Cog):
     @commands.command(
         name='roll',
         aliases=['dado', 'dados'],
-        help='¡Tira los dados!\nFormato: [numero de dados]d[numero de caras]'
+        help='¡Tira los dados!\nFormato: [numero de dados]d[numero de caras][± modificador]'
     )
     async def dados(self, ctx: commands.Context, throw: str):
-        throw = throw.split('d')
-        tiros = int(throw[0])
-        caras = int(throw[0])*int(throw[1])
-        assert tiros >= 1
+        values = self.diceregex.findall(throw)[0]
+        tiros = int(values[0])
+        caras = int(values[1])
+        mod = 0
+        if values[2] != '':
+            mod = int(values[2])
+        assert 1 <= tiros <= 100
         assert caras >= 4
-        await ctx.send(randint(tiros, caras))
+
+        valor_final = 0
+        for _i in range(tiros):
+            valor_final += randint(1, caras)
+
+        await ctx.send(valor_final+mod)
 
     @dados.error
     async def dados_error(self, ctx: commands.Context, error):
-        await ctx.send('Formato incorrecto\nFormato: (numero de dados >= 1)d(caras de los dados >= 4)')
+        await ctx.send('Formato incorrecto\nFormato: (1 <= dados <= 100)d(caras >= 4)(±modificador)')
 
 
 def setup(bot):
