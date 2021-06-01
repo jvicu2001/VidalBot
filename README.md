@@ -3,7 +3,7 @@
 
 
 ## Instalación
-Este bot requiere Python 3.6+
+Este bot requiere Python 3.8+
 
 ---
 Aunque no es estrictamente necesario, se recomienda crear un entorno virtual para el bot.
