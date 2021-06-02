@@ -16,9 +16,9 @@ class Weezer(commands.Cog):
     async def weezer(self, ctx: commands.Context, user: discord.Member = None):
         async with ctx.channel.typing():
             if user is None:
-                avatar_url = str(ctx.author.avatar_url)
+                avatar_url = str(ctx.author.avatar_url_as(format='png'))
             else:
-                avatar_url = str(user.avatar_url)
+                avatar_url = str(user.avatar_url_as(format='png'))
             
             weezer_url = 'https://i.imgur.com/RQEUK1w.png'
 
@@ -28,13 +28,13 @@ class Weezer(commands.Cog):
                 async with session.get(avatar_url) as resp:
                     if resp.status == 200:
                         avatar_bytes = await resp.content.read()
-                        avatar = Image.open(BytesIO(avatar_bytes)).resize((512, 512), Image.ANTIALIAS)
+                        avatar = Image.open(BytesIO(avatar_bytes), 'r').resize((512, 512), Image.ANTIALIAS)
 
             async with aiohttp.ClientSession() as session:
                 async with session.get(weezer_url) as resp:
                     if resp.status == 200:
                         weezer_bytes = await resp.content.read()
-                        weezer = Image.open(BytesIO(weezer_bytes)).resize((512, 512), Image.ANTIALIAS)
+                        weezer = Image.open(BytesIO(weezer_bytes), 'r').resize((512, 512), Image.ANTIALIAS)
 
             image.paste(avatar, (0, 0))
             image.alpha_composite(weezer, (0, 0))
