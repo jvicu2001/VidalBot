@@ -76,7 +76,7 @@ Horóscopo para el {horoscopo['titulo']}"""
                         # y se devuelven estos nuevos datos
                         if valor_db:
                             dia_guardado = valor_db[2]
-                            if dia_guardado[5:] == f"{self.meses[horoscopo['titulo'][3:]]}-{int(horoscopo['titulo'][:2]):02}":
+                            if dia_guardado[5:] == f"{self.meses[horoscopo['titulo'][2:].strip()]}-{int(horoscopo['titulo'][:2]):02}":
                                 return json.loads(valor_db[1])
                         
                         dia = datetime.datetime.today().strftime("%Y-%m-%d")
