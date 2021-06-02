@@ -1,19 +1,26 @@
+import asyncio
 import datetime
 import json
-import sqlite3
 
 import aiohttp
+import aiosqlite
 import config
 import discord
 from discord.ext import commands
+
+
 
 
 class HoroscopoTiaYoli(commands.Cog):
     def __init__(self, bot) -> None:
         super().__init__()
         self.bot = bot
-        db = sqlite3.connect(config.database)
-        db.execute('''
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.init_db())
+
+    async def init_db(self):
+        db = await aiosqlite.connect(config.database)
+        await db.execute('''
     CREATE TABLE IF NOT EXISTS "TiaYoli" (
         "id" INTEGER NOT NULL UNIQUE,
         "horoscopo"	TEXT NOT NULL,
@@ -21,8 +28,9 @@ class HoroscopoTiaYoli(commands.Cog):
         PRIMARY KEY("id")
     );
         ''')
-        db.commit()
-        db.close()
+        await db.commit()
+        await db.close()
+        
 
     meses = {
     "enero": "01", 
@@ -58,7 +66,7 @@ Horóscopo para el {horoscopo['titulo']}"""
         )
         return embed
     
-    async def obtener_horoscopo(self, ctx, cursor: sqlite3.Cursor):
+    async def obtener_horoscopo(self, ctx, cursor: aiosqlite.Cursor):
         tyaas = 'https://api.xor.cl/tyaas/'
         # Obtener datos desde la API de TYaaS
         async with aiohttp.ClientSession() as session:
@@ -67,8 +75,8 @@ Horóscopo para el {horoscopo['titulo']}"""
                         horoscopo = await resp.json()
                         horoscopo_dump = json.dumps(horoscopo)
                         # Obtener valores ya guardados en la base de datos
-                        cursor.execute("""SELECT * FROM 'TiaYoli';""")
-                        valor_db = cursor.fetchone()
+                        await cursor.execute("""SELECT * FROM 'TiaYoli';""")
+                        valor_db = await cursor.fetchone()
 
                         # Si es que existen datos y estos corresponden al día actual, devolver
                         # los datos ya guardados en la base de datos.
@@ -82,7 +90,7 @@ Horóscopo para el {horoscopo['titulo']}"""
                         dia = datetime.datetime.today().strftime("%Y-%m-%d")
 
                         # Guardar los nuevos datos en la base de datos
-                        cursor.execute('''INSERT INTO "TiaYoli"(id, horoscopo, dia) VALUES (?, ?, ?)
+                        await cursor.execute('''INSERT INTO "TiaYoli"(id, horoscopo, dia) VALUES (?, ?, ?)
         ON CONFLICT(id) DO UPDATE SET horoscopo=?, dia=?;''', [0, horoscopo_dump, dia, horoscopo_dump, dia])
                         return horoscopo
                     else:
@@ -95,10 +103,10 @@ Horóscopo para el {horoscopo['titulo']}"""
         help='¡Obtenga su horóscopo de la Tía Yoli!'
     )
     async def horoscopo(self, ctx, signo: str):
-        db = sqlite3.connect(config.database)
-        cursor = db.cursor()
-        cursor.execute("""SELECT * FROM 'TiaYoli';""")
-        saved_data = cursor.fetchone()
+        db = await aiosqlite.connect(config.database)
+        cursor = await db.cursor()
+        await cursor.execute("""SELECT * FROM 'TiaYoli';""")
+        saved_data = await cursor.fetchone()
         # Si es que existen datos en la base de dato y corresponden al día actual,
         # utilizar estos datos guardados.
         # En caso contrario, obtener nuevos datos desde la API
@@ -119,8 +127,8 @@ Horóscopo para el {horoscopo['titulo']}"""
             except KeyError:
                 await ctx.send("No se pudo encontrar el signo.\nAsegurate de que está bien escrito y de que no tenga tildes.")
 
-        db.commit()
-        db.close()
+        await db.commit()
+        await db.close()
 
 
 
