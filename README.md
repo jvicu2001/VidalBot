@@ -8,7 +8,7 @@ Este bot requiere Python 3.8+
 ---
 Aunque no es estrictamente necesario, se recomienda crear un entorno virtual para el bot.
 ```
-python -m venv venv
+python3 -m venv venv
 ```
 Para activar el entorno virtual, debemos ejecutar lo siguiente dependiendo del ecosistema en el que se está usando
 
@@ -23,7 +23,7 @@ Para activar el entorno virtual, debemos ejecutar lo siguiente dependiendo del e
 ---
 Se deben instalar las dependencias del bot, esto se puede hacer con el siguiente comando
 ```
-python -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 Se debe hacer una copia de ``config.py.template`` y renombrarla a ``config.py``
 
