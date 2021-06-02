@@ -40,18 +40,47 @@ python bot.py
 ## Comandos disponibles
 Nota: Los comandos actuales se pueden consular con el comando ``.help``
 ```
+AdminMisc:
+  dm        
+  message   
+  ping      Muestra la latencia entre el bot y los servidores de Discord.
+  prefix    Visualiza y (solo administrador) cambia el prefijo del bot en est...
 Akinator_Game:
-  akinator Juega a Akinator!
+  akinator  Juega a Akinator!
 Hello:
-  hello    Mensaje de prueba
+  hello     
+HoroscopoTiaYoli:
+  horoscopo ¡Obtenga su horóscopo de la Tía Yoli!
 KanyeQuotes:
-  kanye    Frases de Kanye West
+  kanye     Frases de Kanye West
+MiscCommands:
+  emoji     Obtén la imagen de un emoji custom.
+  rate      Califica un usuario o texto
 RandomAnimals:
-  bunny    Imágenes de conejos
-  cat      Imágenes de gatos
-  dog      Imágenes de perros
-  duck     Imágenes de patos
-  fox      Imágenes de zorros
-  shiba    Imágenes de Shiba Inus
+  bird      Imágenes de aves
+  bunny     Imágenes de conejos
+  cat       Imágenes de gatos
+  dog       Imágenes de perros
+  duck      Imágenes de patos
+  fox       Imágenes de zorros
+  hyena     Imágenes de hienas
+  shiba     Imágenes de Shiba Inus
+RandomGames:
+  coin      ¡Lanza una moneda!
+  roll      ¡Tira los dados!
+Sweeper:
+  sweeper   ¡Juega a BuscaMinas!
+UserManagement:
+  ban       Banea a un usuario del servidor
+  kick      Expulsa a un usuario del servidor
+  multikick Kickea a múltiples usuarios del servidor
+  unban     Desbanea a un usuario del servidor
+Wate:
+  setwates  Establece directamente la cantidad de wates de algún usuario
+  wate      
+  waterank  Visualiza el ranking de wates.
+  wates     Ver cuantos wates se le han pegado a alguien
+Weezer:
+  weezer    Convierte un avatar en una portada de Weezer
 ```
 
