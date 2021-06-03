@@ -22,6 +22,7 @@ base_modules = [
             'cogs.fun.animal_pics',
             'cogs.fun.akinator',
             'cogs.fun.kanye',
+            'cogs.fun.misc',
             'cogs.fun.games',
             'cogs.fun.tyaas',
             'cogs.fun.wates',
