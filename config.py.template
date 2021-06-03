@@ -1,3 +1,8 @@
 token = 'YOUR-TOKEN-HERE'
 prefix = '.'
 database = 'database.sqlite'
+
+covid = {
+    'chat_id': "",  # TELEGRAM PUBLISHING CHAT CHANNEL ID HERE
+    'bot_token': "" # TELEGRAM BOT TOKEN HERE
+}

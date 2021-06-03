@@ -47,15 +47,14 @@ AdminMisc:
   prefix    Visualiza y (solo administrador) cambia el prefijo del bot en est...
 Akinator_Game:
   akinator  Juega a Akinator!
+CasosCovidChile:
+  covid     Solicita y administra la recolección de datos sobre el COVID-19 e...
 Hello:
   hello     
 HoroscopoTiaYoli:
   horoscopo ¡Obtenga su horóscopo de la Tía Yoli!
 KanyeQuotes:
   kanye     Frases de Kanye West
-MiscCommands:
-  emoji     Obtén la imagen de un emoji custom.
-  rate      Califica un usuario o texto
 RandomAnimals:
   bird      Imágenes de aves
   bunny     Imágenes de conejos
@@ -70,11 +69,6 @@ RandomGames:
   roll      ¡Tira los dados!
 Sweeper:
   sweeper   ¡Juega a BuscaMinas!
-UserManagement:
-  ban       Banea a un usuario del servidor
-  kick      Expulsa a un usuario del servidor
-  multikick Kickea a múltiples usuarios del servidor
-  unban     Desbanea a un usuario del servidor
 Wate:
   setwates  Establece directamente la cantidad de wates de algún usuario
   wate      

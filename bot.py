@@ -28,7 +28,8 @@ base_modules = [
             'cogs.fun.image_manipulation',
             'cogs.admin.misc',
             'cogs.admin.base_error_catch',
-            'cogs.db.initialize'
+            'cogs.db.initialize',
+            'cogs.info.casos_diarios_covid'
             ]
             
 def get_prefix(bot, message:discord.Message):
