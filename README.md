@@ -1,8 +1,13 @@
-# VidalBot
- Bot experimental para Discord™. Hecho con [discord.py](https://github.com/Rapptz/discord.py)
+VidalBot
+========
+
+[![Invitación Discord](https://discordapp.com/api/guilds/841931012765122591/widget.png)](https://discord.gg/fsV6TkvCjk)
+
+Bot experimental para Discord™. Hecho con [discord.py](https://github.com/Rapptz/discord.py)
 
 
-## Instalación
+Instalación
+-----------
 Este bot requiere Python 3.8+
 
 ---
@@ -33,56 +38,51 @@ Una vez se tenga ese token, hay que reemplazar el valor por defecto en ``config.
 
 Terminado todo esto, se puede ejecutar el bot con 
 ```
-python bot.py
+python3 bot.py
 ```
 ---
 
-## Comandos disponibles
+Comandos disponibles
+--------------------
+
 Nota: Los comandos actuales se pueden consular con el comando ``.help``
 ```
 AdminMisc:
-  dm        
-  message   
-  ping      Muestra la latencia entre el bot y los servidores de Discord.
-  prefix    Visualiza y (solo administrador) cambia el prefijo del bot en est...
+  dm           
+  message      
+  ping         Muestra la latencia entre el bot y los servidores de Discord.
+  prefix       Visualiza y (solo administrador) cambia el prefijo del bot en ...
 Akinator_Game:
-  akinator  Juega a Akinator!
+  akinator     Juega a Akinator!
 CasosCovidChile:
-  covid     Solicita y administra la recolección de datos sobre el COVID-19 e...
-Hello:
-  hello     
+  covid        Solicita y administra la recolección de datos sobre el COVID-1...
 HoroscopoTiaYoli:
-  horoscopo ¡Obtenga su horóscopo de la Tía Yoli!
+  horoscopo    ¡Obtenga su horóscopo de la Tía Yoli!
+ImageManipulation:
+  weezer       Convierte un avatar en una portada de Weezer
 KanyeQuotes:
-  kanye     Frases de Kanye West
+  kanye        Frases de Kanye West
 MiscCommands:
-  emoji     Obtén la imagen de un emoji custom.
-  rate      Califica un usuario o texto
+  emoji        Obtén la imagen de un emoji.
+  rate         Califica un usuario o texto
 RandomAnimals:
-  bird      Imágenes de aves
-  bunny     Imágenes de conejos
-  cat       Imágenes de gatos
-  dog       Imágenes de perros
-  duck      Imágenes de patos
-  fox       Imágenes de zorros
-  hyena     Imágenes de hienas
-  shiba     Imágenes de Shiba Inus
+  bird         Imágenes de aves
+  bunny        Imágenes de conejos
+  cat          Imágenes de gatos
+  dog          Imágenes de perros
+  duck         Imágenes de patos
+  fox          Imágenes de zorros
+  hyena        Imágenes de hienas
+  shiba        Imágenes de Shiba Inus
 RandomGames:
-  coin      ¡Lanza una moneda!
-  roll      ¡Tira los dados!
+  coin         ¡Lanza una moneda!
+  roll         ¡Tira los dados!
 Sweeper:
-  sweeper   ¡Juega a BuscaMinas!
-UserManagement:
-  ban       Banea a un usuario del servidor
-  kick      Expulsa a un usuario del servidor
-  multikick Kickea a múltiples usuarios del servidor
-  unban     Desbanea a un usuario del servidor
+  sweeper      ¡Juega a BuscaMinas!
 Wate:
-  setwates  Establece directamente la cantidad de wates de algún usuario
-  wate      
-  waterank  Visualiza el ranking de wates.
-  wates     Ver cuantos wates se le han pegado a alguien
-Weezer:
-  weezer    Convierte un avatar en una portada de Weezer
+  setwates     Establece directamente la cantidad de wates de algún usuario
+  wate         
+  waterank     Visualiza el ranking de wates.
+  wates        Ver cuantos wates se le han pegado a alguien
 ```
 
