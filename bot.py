@@ -1,4 +1,5 @@
 import logging
+import glob
 
 import discord
 from discord.ext import commands
@@ -17,21 +18,6 @@ console_handler.setLevel(logging.INFO)
 console_handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(console_handler)
 
-base_modules = [
-            'cogs.fun.hello',
-            'cogs.fun.animal_pics',
-            'cogs.fun.akinator',
-            'cogs.fun.kanye',
-            'cogs.fun.misc',
-            'cogs.fun.games',
-            'cogs.fun.tyaas',
-            'cogs.fun.wates',
-            'cogs.fun.image_manipulation',
-            'cogs.admin.misc',
-            'cogs.admin.base_error_catch',
-            'cogs.db.initialize',
-            'cogs.info.casos_diarios_covid'
-            ]
             
 def get_prefix(bot, message:discord.Message):
     file = open("prefixes.json", 'r')
@@ -45,9 +31,14 @@ def get_prefix(bot, message:discord.Message):
 bot = commands.Bot(command_prefix=get_prefix, intents=Intents.all())
 logger.info(f"Bot instance created with default prefix {config.prefix}")
 
-for module in base_modules:
-    bot.load_extension(module)
-    logger.info(f'Loaded extension {module}')
+extensions = [path[2:-3].replace('/', '.') for path in glob.glob('./cogs/*/*.py')]
+
+for module in extensions:
+    try:
+        bot.load_extension(module)
+        logger.info(f'Loaded extension {module}')
+    except ModuleNotFoundError:
+        logger.warning(f'{module} is NOT a module.')
 
 bot.run(config.token)
 logger.info('Bot instance started')
