@@ -4,6 +4,8 @@ import discord
 from discord.ext import commands
 from typing import Union
 
+from discord.ext.commands.errors import BadUnionArgument
+
 
 class MiscCommands(commands.Cog):
     def __init__(self, bot):
@@ -38,7 +40,7 @@ class MiscCommands(commands.Cog):
     @commands.command(
         name='emoji',
         aliases=['emote'],
-        help='Obtén la imagen de un emoji custom.'
+        help='Obtén la imagen de un emoji.'
     )
     async def emoji(self, ctx: commands.Context, emoji: Union[discord.Emoji, discord.PartialEmoji]):
         embed = discord.Embed(
@@ -53,6 +55,24 @@ class MiscCommands(commands.Cog):
         )
         embed.set_image(url=emoji.url)
         await ctx.send(embed=embed)
+
+    @emoji.error
+    async def emoji_error(self, ctx: commands.Context, error):
+        if isinstance(error, BadUnionArgument):
+            embed = discord.Embed(
+                title = '¡No se pudo encontrar el emoji!',
+                type = 'rich',
+                color = discord.Colour.dark_red(),
+                description = 'Si lo que buscas es la imagen de un emoji entre los incluidos con Discord, \
+puedes hacerlo siguiendo los siguientes pasos (Solo disponibles en Escritorio y Navegador)'
+            )
+            embed.set_image(url='https://i.imgur.com/asd1RID.gif')
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f'Ha ocurrido un error:\n```{error.__class__.__name__}: {error}\n```')
+
+
+        
 
 def setup(bot):
     bot.add_cog(MiscCommands(bot))
