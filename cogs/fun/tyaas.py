@@ -12,9 +12,9 @@ from discord.ext import commands
 
 
 class HoroscopoTiaYoli(commands.Cog):
-    def __init__(self, bot) -> None:
-        super().__init__()
+    def __init__(self, bot):
         self.bot = bot
+        self.category = "Fun"
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.init_db())
 

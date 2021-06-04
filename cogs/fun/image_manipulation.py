@@ -6,7 +6,11 @@ from io import BytesIO
 from PIL import Image
 from discord.ext.commands import context
 
-class Weezer(commands.Cog):
+class ImageManipulation(commands.Cog):
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.category = "Fun"
 
     @commands.command(
         name='weezer',
@@ -49,4 +53,4 @@ class Weezer(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Weezer(bot))
+    bot.add_cog(ImageManipulation(bot))

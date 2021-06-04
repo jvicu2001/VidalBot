@@ -52,6 +52,7 @@ guess_emojis = ('✅','❌')
 class Akinator_Game(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.category = "Fun"
         DiscordComponents(bot)
     
     # Obtiene los botones correspondientes a la situación

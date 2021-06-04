@@ -1,15 +1,14 @@
-from random import randint, normalvariate
+from random import randint
 import re
 
 import discord
-from discord.colour import Colour
 from discord.ext import commands
-from discord.ext.commands import bot
 import asyncio
 
 class Sweeper(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.category = "Fun"
 
     states = {
         'BLANK': '🟦',
@@ -90,6 +89,7 @@ class Sweeper(commands.Cog):
 class RandomGames(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.category = "Fun"
 
         self.diceregex = re.compile(r'(\d+)d(\d+)([+-]\d+)?')
 

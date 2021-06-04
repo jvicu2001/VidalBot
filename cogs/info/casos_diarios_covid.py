@@ -26,8 +26,9 @@ meses = {
 
 
 class CasosCovidChile(commands.Cog):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot):
         self.bot = bot
+        self.category = "Info"
         loop = asyncio .get_event_loop()
         loop.run_until_complete(self.init_db())
         self.url_consulta = "https://api.github.com/repos/MinCiencia/Datos-COVID19/contents/output/producto5"

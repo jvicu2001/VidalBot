@@ -10,6 +10,7 @@ from discord.ext.commands.errors import BadUnionArgument
 class MiscCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.category = "Fun"
         self.rng = random.Random()
 
     @commands.command(

@@ -8,6 +8,7 @@ from discord.ext.commands.errors import CommandNotFound
 class BaseError(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.category = "Owner"
 
 
     @commands.Cog.listener()

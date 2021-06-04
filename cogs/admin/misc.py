@@ -8,6 +8,7 @@ from discord.ext import commands
 class AdminMisc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.category = "Admin"
 
     @commands.guild_only()
     @commands.command(

@@ -6,6 +6,7 @@ import config
 class DatabaseSetup(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.category = "Owner"
 
     @commands.Cog.listener()
     async def on_ready(self):
