@@ -5,18 +5,16 @@ from discord.ext.commands.converter import InviteConverter
 
 import config
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands.errors import MemberNotFound
 
 
 class Wate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.category = "Fun"
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.init_db())
+        self.init_db.start()
 
-
+    @tasks.loop(minutes=2, count=1)
     async def init_db(self):
         db = await aiosqlite.connect(config.database)
         await db.execute('''CREATE TABLE IF NOT EXISTS MemeBan(

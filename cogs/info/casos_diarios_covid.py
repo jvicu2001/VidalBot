@@ -29,12 +29,12 @@ class CasosCovidChile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.category = "Info"
-        loop = asyncio .get_event_loop()
-        loop.run_until_complete(self.init_db())
+        self.init_db.start()
         self.url_consulta = "https://api.github.com/repos/MinCiencia/Datos-COVID19/contents/output/producto5"
 
         self.consultar_cambio_datos.start()
 
+    @tasks.loop(minutes=2, count=1)
     async def init_db(self):
         db = await aiosqlite.connect(config.database)
         cursor = await db.cursor()
@@ -264,7 +264,14 @@ class CasosCovidChile(commands.Cog):
         embed.set_footer(
             text = f"Información actualizada al: {dt.strftime('%a, %d %b %Y, %H:%m:%S UTC')}"
         )
-        await channel.send(embed=embed)
+        sent_message: discord.Message = await channel.send(embed=embed)
+
+        # Intentar publicar el mensaje
+        try:
+            await sent_message.publish()
+        except:
+            pass
+
         
 
     async def texto_datos(self, datos_url: str):
