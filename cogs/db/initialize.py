@@ -25,6 +25,12 @@ class DatabaseSetup(commands.Cog):
             property_value TEXT,
             PRIMARY KEY(property_name)
         );''')
+        await cursor.execute('''
+        CREATE TABLE IF NOT EXISTS GuildConfig (
+            "guild_id" INTEGER NOT NULL UNIQUE,
+            config TEXT DEFAULT "{}",
+            PRIMARY KEY("guild_id")
+        );''')
         await db.commit()
         await db.close()
 
