@@ -1,18 +1,19 @@
 import asyncio
 import random
 import aiosqlite
-from discord.ext.commands.converter import InviteConverter
 
 import config
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import MemberNotFound
+import utils.check
 
 
 class Wate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.init_db.start()
+        self.category='Fun'
 
     @tasks.loop(minutes=2, count=1)
     async def init_db(self):
@@ -32,13 +33,13 @@ class Wate(commands.Cog):
         name='wate'
     )
     async def wate(self, ctx: commands.Context, *users):
-        valid_users = []
+        valid_users = set()
         db = await aiosqlite.connect(config.database)
         cursor = await db.cursor()
         for user in users:
             try:
                 member = await commands.MemberConverter().convert(ctx, user)
-                valid_users.append(member)
+                valid_users.add(member)
             except MemberNotFound:
                 pass
 
@@ -117,7 +118,7 @@ class Wate(commands.Cog):
         await db.close()
 
     @commands.guild_only()
-    @commands.has_guild_permissions(administrator=True)
+    @commands.check(utils.check.is_staff)
     @commands.command(
         name='setwates',
         aliases=['setwate'],
