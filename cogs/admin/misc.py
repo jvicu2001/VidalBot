@@ -39,7 +39,6 @@ class AdminMisc(commands.Cog):
     @commands.check(utils.check.is_staff)
     async def message(self, ctx: commands.Context, channel: discord.TextChannel, *text):
         text = " ".join(text)
-        print(channel)
         if ctx.guild:
 
             if ctx.guild.get_channel(channel.id):

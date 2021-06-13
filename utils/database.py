@@ -10,7 +10,6 @@ async def get_guild_config(guild: discord.Guild):
     SELECT config FROM GuildConfig WHERE guild_id=?;''', (guild.id,))
     data = await cursor.fetchone()
     await db.close()
-    print(data)
     if data:
         return json.loads(data[0])
     else:
