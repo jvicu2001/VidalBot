@@ -2,6 +2,7 @@ import json
 import time
 
 import discord
+import utils.check
 from discord.ext import commands
 
 
@@ -35,7 +36,7 @@ class AdminMisc(commands.Cog):
         name='message'
     )
     @commands.guild_only()
-    @commands.has_permissions(administrator=True)
+    @commands.check(utils.check.is_staff)
     async def message(self, ctx: commands.Context, channel: discord.TextChannel, *text):
         text = " ".join(text)
         print(channel)
