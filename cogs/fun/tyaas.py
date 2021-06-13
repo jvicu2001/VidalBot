@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import json
 
@@ -66,7 +65,7 @@ Horóscopo para el {horoscopo['titulo']}"""
         )
         return embed
     
-    async def obtener_horoscopo(self, ctx, cursor: aiosqlite.Cursor):
+    async def obtener_horoscopo(self, ctx: commands.Context, cursor: aiosqlite.Cursor):
         tyaas = 'https://api.xor.cl/tyaas/'
         # Obtener datos desde la API de TYaaS
         async with aiohttp.ClientSession() as session:
@@ -122,7 +121,7 @@ Horóscopo para el {horoscopo['titulo']}"""
         
         if horoscopo:
             try:
-                embed = await self.armar_horoscopo(signo, horoscopo)
+                embed = await self.armar_horoscopo(signo.lower(), horoscopo)
                 await ctx.send(embed=embed)
             except KeyError:
                 await ctx.send("No se pudo encontrar el signo.\nAsegurate de que está bien escrito y de que no tenga tildes.")
