@@ -359,8 +359,8 @@ class CasosCovidChile(commands.Cog):
 
                     *_, residencias = datos
                     _ = None
-                    residencias_total = sum([int(i) for i in residencias[32:]])
-                    residencias_cupos = sum([int(i) for i in residencias[1:17]])
+                    residencias_total = int(sum([(float(i) if i != '' else 0) for i in residencias[32:]]))
+                    residencias_cupos = int(sum([(float(i) if i != '' else 0) for i in residencias[1:17]]))
                     residencias = None
         
 
