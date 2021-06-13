@@ -48,7 +48,7 @@ class Sweeper(commands.Cog):
             # Limit board size. The theorical max should be 18x18 but for some reason
             # the message stops at around ~115 cells. Maybe there0s a limit on how many
             # spoilers a message can have. The limit seems to be 99 spoilers per message.
-            size = min(size, 10)
+            size = max(2, min(size, 10))
 
             # Fill board with blanks
             board = [[self.states['BLANK'] for _i in range(size)]for _j in range(size)]
