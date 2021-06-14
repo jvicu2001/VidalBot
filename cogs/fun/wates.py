@@ -28,7 +28,7 @@ class Wate(commands.Cog):
         await db.close()
     
     @commands.guild_only()
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(
         name='wate'
     )
@@ -42,29 +42,32 @@ class Wate(commands.Cog):
                 valid_users.add(member)
             except MemberNotFound:
                 pass
-
-        for user in valid_users:
-            if user.id == ctx.author.id:
-                await ctx.send('Cómo te vas a pegar un wate a tí mismo a ver.')
-                continue
-            if random.choice([True, False]):
-                
-                
-                await cursor.execute('''SELECT bans FROM "MemeBan" WHERE guild_id=? AND user_id=?;''', (ctx.guild.id, user.id))
-                wates = await cursor.fetchone()
-                if wates == None:
-                    wates = 0
+        is_staff = (await utils.check.is_staff(ctx))
+        if (len(valid_users) == 1) or is_staff:
+            for user in valid_users:
+                if user.id == ctx.author.id:
+                    await ctx.send('Cómo te vas a pegar un wate a tí mismo a ver.')
+                    continue
+                if random.choice([True, False]):
+                    
+                    
+                    await cursor.execute('''SELECT bans FROM "MemeBan" WHERE guild_id=? AND user_id=?;''', (ctx.guild.id, user.id))
+                    wates = await cursor.fetchone()
+                    if wates == None:
+                        wates = 0
+                    else:
+                        wates = wates[0]
+                    new_wates = wates+1
+                    await cursor.execute('''INSERT INTO "MemeBan"(guild_id, user_id, bans) VALUES (?, ?, ?)
+                    ON CONFLICT(guild_id, user_id) DO UPDATE SET bans=?;''', [ctx.guild.id, user.id, new_wates, new_wates])
+                    await ctx.send(f'Se le proporcionó un wate a {user.display_name}. Ahora tiene {new_wates} wate(s)')
+                    
                 else:
-                    wates = wates[0]
-                new_wates = wates+1
-                await cursor.execute('''INSERT INTO "MemeBan"(guild_id, user_id, bans) VALUES (?, ?, ?)
-                ON CONFLICT(guild_id, user_id) DO UPDATE SET bans=?;''', [ctx.guild.id, user.id, new_wates, new_wates])
-                await ctx.send(f'Se le proporcionó un wate a {user.display_name}. Ahora tiene {new_wates} wate(s)')
-                
-            else:
-                await ctx.send(f'{user.display_name} evadió el wate 🏃‍♂️')
+                    await ctx.send(f'{user.display_name} evadió el wate 🏃‍♂️')
         
-        await db.commit()
+            await db.commit()
+        else:
+            await ctx.send('¡Solo le puedes dar un wate a un usuario a la vez!')
         await db.close()
 
     @wate.error
