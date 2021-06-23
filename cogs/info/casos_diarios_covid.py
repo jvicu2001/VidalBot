@@ -399,7 +399,7 @@ class CasosCovidChile(commands.Cog):
 **Recuperados**: {nf(round(float(hoy_casos['Casos confirmados recuperados'])))} ({nf(diff(ayer_casos, hoy_casos, 'Casos confirmados recuperados'))})
 **Fallecidos**: {nf(round(float(hoy_casos['Fallecidos'])))} ({nf(diff(ayer_casos, hoy_casos, 'Fallecidos'))})
 
-**Exámenes realizados**: {nf(round(float(pcr['Total realizados'])))} (+{nf(round(float(pcr['Total informados ultimo dia'])))}, positividad: {str(round(float(positividad['positividad'])*100, 2)).replace('.', ',')}%)
+**Exámenes realizados**: {nf(round(float(pcr['Total realizados'])))} (+{nf(round(float(pcr['Total informados ultimo dia'])))}, positividad: {str(round(float(positividad['positividad pcr'])*100, 2)).replace('.', ',')}%)
 **Pacientes conectados**: {nf(round(float(hoy_vmi['Pacientes VMI'])))} ({nf(diff(ayer_vmi, hoy_vmi, 'Pacientes VMI'))}), críticos: {nf(round(float(hoy_uci['Pacientes criticos'])))} ({nf(diff(ayer_uci, hoy_uci ,'Pacientes criticos'))})
 **Ventiladores disponibles**: {nf(hoy_vent['disponibles'])} ({nf(diff(ayer_vent, hoy_vent, 'disponibles'))})
 
