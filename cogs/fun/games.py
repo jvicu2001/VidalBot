@@ -1,10 +1,14 @@
-from discord.ext import commands
-from discord.ext.commands import bot
 from random import randint
+import re
+
+import discord
+from discord.ext import commands
+import asyncio
 
 class Sweeper(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.category = "Fun"
 
     states = {
         'BLANK': '🟦',
@@ -44,7 +48,7 @@ class Sweeper(commands.Cog):
             # Limit board size. The theorical max should be 18x18 but for some reason
             # the message stops at around ~115 cells. Maybe there0s a limit on how many
             # spoilers a message can have. The limit seems to be 99 spoilers per message.
-            size = min(size, 10)
+            size = max(2, min(size, 10))
 
             # Fill board with blanks
             board = [[self.states['BLANK'] for _i in range(size)]for _j in range(size)]
@@ -81,8 +85,65 @@ class Sweeper(commands.Cog):
             message = "\n".join(board)
 
             return await ctx.send(message)
-    
+
+class RandomGames(commands.Cog):
+    def __init__(self, bot) -> None:
+        self.bot = bot
+        self.category = "Fun"
+
+        self.diceregex = re.compile(r'(\d+)d(\d+)([+-]\d+)?')
+
+    @commands.max_concurrency(1, commands.BucketType.user)
+    @commands.command(
+        name='coin',
+        aliases=['moneda'],
+        help='¡Lanza una moneda!'
+    )
+    async def throwcoin(self, ctx: commands.Context):
+        coin = randint(0,1)
+        embed = discord.Embed(
+            title='Lanzando la moneda.',
+            type='rich',
+            description='¿Qué caerá?',
+            color=discord.Colour.dark_orange()
+        )
+        embed.set_image(url='https://media2.giphy.com/media/6jqfXikz9yzhS/giphy.gif')
+        message:discord.Message= await ctx.send(embed=embed)
+        await asyncio.sleep(3)
+        embed= discord.Embed(
+            title=('Cara', 'Sello')[coin],
+            type='rich',
+            color = discord.Colour.dark_gold()
+        )
+        embed.set_image(url=('https://i.imgur.com/QAKxjWC.png', 'https://i.imgur.com/ceBFC9W.png')[coin])
+        await message.edit(embed=embed)
+
+    @commands.command(
+        name='roll',
+        aliases=['dado', 'dados'],
+        help='¡Tira los dados!\nFormato: [numero de dados]d[numero de caras][± modificador]'
+    )
+    async def dados(self, ctx: commands.Context, throw: str):
+        values = self.diceregex.findall(throw)[0]
+        tiros = int(values[0])
+        caras = int(values[1])
+        mod = 0
+        if values[2] != '':
+            mod = int(values[2])
+        assert 1 <= tiros <= 100
+        assert caras >= 4
+
+        valor_final = 0
+        for _i in range(tiros):
+            valor_final += randint(1, caras)
+
+        await ctx.send(valor_final+mod)
+
+    @dados.error
+    async def dados_error(self, ctx: commands.Context, error):
+        await ctx.send('Formato incorrecto\nFormato: (1 <= dados <= 100)d(caras >= 4)(±modificador)')
 
 
 def setup(bot):
     bot.add_cog(Sweeper(bot))
+    bot.add_cog(RandomGames(bot))

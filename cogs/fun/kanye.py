@@ -6,6 +6,7 @@ import aiohttp
 class KanyeQuotes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.category = "Fun"
 
     api_url = 'https://api.kanye.rest'
 
